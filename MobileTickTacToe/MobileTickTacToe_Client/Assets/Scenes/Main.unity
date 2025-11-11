@@ -131,12 +131,12 @@ GameObject:
   - component: {fileID: 265068274}
   - component: {fileID: 265068273}
   m_Layer: 5
-  m_Name: TxtInputPasswordError
+  m_Name: Txt_InputPasswordError
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &265068272
 RectTransform:
   m_ObjectHideFlags: 0
@@ -176,7 +176,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Invalid Password!!!
+  m_text: Password is Too Long !!!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -268,7 +268,7 @@ GameObject:
   - component: {fileID: 275793887}
   - component: {fileID: 275793886}
   m_Layer: 5
-  m_Name: InputUserName
+  m_Name: Input_UserName
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -722,6 +722,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7a9e98920a1f9142bd7410e812832f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxUserNameLength: 10
+  maxPasswordLength: 10
 --- !u!114 &732959062
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -772,7 +774,7 @@ GameObject:
   - component: {fileID: 787030637}
   - component: {fileID: 787030636}
   m_Layer: 5
-  m_Name: TxtLoginTitle
+  m_Name: Txt_LoginTitle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -908,12 +910,12 @@ GameObject:
   - component: {fileID: 906737924}
   - component: {fileID: 906737923}
   m_Layer: 5
-  m_Name: TxtInputUserNameError
+  m_Name: Txt_InputUserNameError
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &906737922
 RectTransform:
   m_ObjectHideFlags: 0
@@ -953,7 +955,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Invalid or Too Long!!!
+  m_text: Invalid or Too Long !!!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1045,7 +1047,7 @@ GameObject:
   - component: {fileID: 927256565}
   - component: {fileID: 927256564}
   m_Layer: 5
-  m_Name: InputPassword
+  m_Name: Input_Password
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1429,12 +1431,12 @@ GameObject:
   - component: {fileID: 1238640287}
   - component: {fileID: 1238640286}
   m_Layer: 5
-  m_Name: TxtLoginError
+  m_Name: Txt_LoginError
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1238640285
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1723,7 +1725,7 @@ GameObject:
   - component: {fileID: 1390812567}
   - component: {fileID: 1390812566}
   m_Layer: 5
-  m_Name: BtnQuit
+  m_Name: Btn_Quit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2409,7 +2411,7 @@ GameObject:
   - component: {fileID: 1561624056}
   - component: {fileID: 1561624055}
   m_Layer: 5
-  m_Name: BtnLogin
+  m_Name: Btn_Login
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2529,7 +2531,7 @@ GameObject:
   - component: {fileID: 1650579040}
   - component: {fileID: 1650579039}
   m_Layer: 5
-  m_Name: TxtArena
+  m_Name: Txt_Arena
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
