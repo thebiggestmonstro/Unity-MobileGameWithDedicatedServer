@@ -1,5 +1,6 @@
 using LiteNetLib;
 using LiteNetLib.Utils;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -10,6 +11,8 @@ public class NetworkClient : MonoBehaviour, INetEventListener
     private NetManager _netManager;
     private NetPeer _server;
     private NetDataWriter _writer;
+
+    public event Action OnServerConnected;
 
     private static NetworkClient _instance;
 
@@ -52,10 +55,14 @@ public class NetworkClient : MonoBehaviour, INetEventListener
         _netManager.Connect("LocalHost", 8888, "");
     }
 
-    public void SendServer(string data)
-    { 
-        var bytes = Encoding.UTF8.GetBytes(data);
-        _server.Send(bytes, DeliveryMethod.ReliableOrdered);
+    public void SendServer<T>(T packet, DeliveryMethod deliveryMethod = DeliveryMethod.ReliableOrdered) where T : INetSerializable
+    {
+        if (_server == null)
+            return;
+        
+        _writer.Reset();
+        packet.Serialize(_writer);
+        _server.Send(_writer, deliveryMethod);
     }
 
     // 서버로부터 데이터를 받은 경우 호출하는 콜백 함수
@@ -71,6 +78,7 @@ public class NetworkClient : MonoBehaviour, INetEventListener
         Debug.Log($"Connect To Port : {peer.Port}");
         Debug.Log($"Connect To IP Address : {peer.Address}");
         _server = peer;
+        OnServerConnected?.Invoke();
     }
 
     // 클라이언트가 서버에서 성공적으로 접속해제했을 경우 호출하는 콜백 함수

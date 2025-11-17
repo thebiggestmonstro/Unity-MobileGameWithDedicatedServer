@@ -1,3 +1,5 @@
+using NetworkShared.Packets.ClientToServer;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using TMPro;
@@ -16,6 +18,8 @@ public class UI_Login : UI_Base
     int maxUserNameLength = 10;
     [SerializeField]
     int maxPasswordLength = 10;
+
+    private bool _isConnected;
 
     public enum GameObjects_Btn
     {
@@ -36,6 +40,13 @@ public class UI_Login : UI_Base
         Txt_LoginError,
     }
 
+    public enum GameObjects_Image
+    { 
+        Img_Circle1,
+        Img_Circle2,
+        Img_Circle3,
+    }
+
     private void Awake()
     {
         GenerateEnumsSerialNumber<UI_Login>(enumNumbers);
@@ -43,6 +54,7 @@ public class UI_Login : UI_Base
         Bind<GameObject>(typeof(GameObjects_Btn));
         Bind<GameObject>(typeof(GameObjects_Input));
         Bind<GameObject>(typeof(GameObjects_Text));
+        Bind<GameObject>(typeof(GameObjects_Image));
     }
 
     private void Start()
@@ -51,14 +63,54 @@ public class UI_Login : UI_Base
         GetObject(enumNumbers[GetEnumFullName(GameObjects_Text.Txt_InputPasswordError)]).SetActive(false);
         GetObject(enumNumbers[GetEnumFullName(GameObjects_Text.Txt_LoginError)]).SetActive(false);
 
+        GetObject(enumNumbers[GetEnumFullName(GameObjects_Image.Img_Circle1)]).transform.parent.gameObject.SetActive(false);
+
         GetObject(enumNumbers[GetEnumFullName(GameObjects_Btn.Btn_Login)]).GetOrAddComponent<Button>().onClick.AddListener(Login);
 
         GetObject(enumNumbers[GetEnumFullName(GameObjects_Input.Input_UserName)]).GetOrAddComponent<TMP_InputField>().onValueChanged.AddListener(UpdateUserName);
         GetObject(enumNumbers[GetEnumFullName(GameObjects_Input.Input_Password)]).GetOrAddComponent<TMP_InputField>().onValueChanged.AddListener(UpdatePassword);
+
+        NetworkClient.Instance.OnServerConnected += SetIsConnected;
+    }
+
+    private void OnDestroy()
+    {
+        NetworkClient.Instance.OnServerConnected -= SetIsConnected;
+    }
+
+    private void SetIsConnected()
+    {
+        _isConnected = true;
     }
 
     private void Login()
     {
+        StopCoroutine(CoLogin());
+        StartCoroutine(CoLogin()); 
+    }
+
+    IEnumerator CoLogin()
+    {
+        EnableLoggingButton(false);
+        GetObject(enumNumbers[GetEnumFullName(GameObjects_Image.Img_Circle1)]).transform.parent.gameObject.SetActive(true);
+
+        NetworkClient.Instance.Connect();
+
+        while (!_isConnected)
+        {
+            Debug.Log("Waitting...");
+            yield return null;
+        }
+
+        Debug.Log("Connected to Server");
+
+        var authRequest = new Net_AuthRequest
+        { 
+            UserName = _userName,
+            Password = _password
+        };
+
+        NetworkClient.Instance.SendServer(authRequest);
     }
 
     private void UpdateUserName(string value)
