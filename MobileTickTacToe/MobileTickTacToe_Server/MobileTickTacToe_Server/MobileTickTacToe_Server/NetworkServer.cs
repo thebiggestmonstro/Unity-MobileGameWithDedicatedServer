@@ -1,6 +1,7 @@
 ﻿using LiteNetLib;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MobileTickTacToe_Server.Handlers;
 using MobileTickTacToe_Server.NetworkShared.Registries;
 using NetworkShared;
 using System.Net;
@@ -54,9 +55,9 @@ namespace TickTackToeWithDedicated_Server
                 {
                     var packetType = (PacketType)reader.GetByte();
                     var packet = RessolvePacket(packetType, reader);
-                    //var handler = RessolveHandler(packetType);
+                    var handler = RessolveHandler(packetType);
 
-                    //handler.Handle(packet, peer.Id);
+                    handler.Handle(packet, peer.Id);
 
                     reader.Recycle();
                 }
@@ -65,16 +66,6 @@ namespace TickTackToeWithDedicated_Server
                     _logger.LogError($"Error {e} Happend while ressolving packet");
                 }
             }
-
-            /*
-            var data = Encoding.UTF8.GetString(reader.RawData);
-            Console.WriteLine($"Received Data From Client : {data}");
-
-            // TEMP
-            var reply = "Hello From Server!!";
-            var bytes = Encoding.UTF8.GetBytes(reply);
-            peer.Send(bytes, DeliveryMethod.ReliableOrdered);
-            */
         }
 
         // 서버에 클라이언트가 성공적으로 접속되면 호출하는 콜백 함수
@@ -108,6 +99,13 @@ namespace TickTackToeWithDedicated_Server
         public void OnNetworkReceiveUnconnected(IPEndPoint remoteEndPoint, NetPacketReader reader, UnconnectedMessageType messageType)
         {
 
+        }
+
+        public IPacketHandler RessolveHandler(PacketType packetType)
+        {
+            var registry = _serviceProvider.GetRequiredService<HandlerRegistry>();
+            var type = registry.Handlers[packetType];
+            return (IPacketHandler)_serviceProvider.GetRequiredService(type);
         }
 
         private INetPacket RessolvePacket(PacketType packetType, NetPacketReader reader)
