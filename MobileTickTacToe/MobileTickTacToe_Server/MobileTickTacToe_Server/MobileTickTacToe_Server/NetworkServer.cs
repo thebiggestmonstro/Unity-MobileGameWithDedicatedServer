@@ -1,12 +1,10 @@
 ﻿using LiteNetLib;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using MobileTickTacToe_Server.NetworkShared.Registries;
+using NetworkShared;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TickTackToeWithDedicated_Server
 {
@@ -14,6 +12,14 @@ namespace TickTackToeWithDedicated_Server
     {
         NetManager _netManager;
         private Dictionary<int, NetPeer> _connections = new Dictionary<int, NetPeer>();
+        private readonly ILogger<NetworkServer> _logger;
+        private readonly IServiceProvider _serviceProvider;
+
+        public NetworkServer(ILogger<NetworkServer> logger, IServiceProvider provider) 
+        {
+            _logger = logger;
+            _serviceProvider = provider;
+        }
 
         public void Start()
         {
@@ -42,6 +48,25 @@ namespace TickTackToeWithDedicated_Server
         // 클라이언트로부터 데이터를 받은 경우 호출하는 콜백 함수
         public void OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channelNumber, DeliveryMethod deliveryMethod)
         {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                try
+                {
+                    var packetType = (PacketType)reader.GetByte();
+                    var packet = RessolvePacket(packetType, reader);
+                    //var handler = RessolveHandler(packetType);
+
+                    //handler.Handle(packet, peer.Id);
+
+                    reader.Recycle();
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError($"Error {e} Happend while ressolving packet");
+                }
+            }
+
+            /*
             var data = Encoding.UTF8.GetString(reader.RawData);
             Console.WriteLine($"Received Data From Client : {data}");
 
@@ -49,6 +74,7 @@ namespace TickTackToeWithDedicated_Server
             var reply = "Hello From Server!!";
             var bytes = Encoding.UTF8.GetBytes(reply);
             peer.Send(bytes, DeliveryMethod.ReliableOrdered);
+            */
         }
 
         // 서버에 클라이언트가 성공적으로 접속되면 호출하는 콜백 함수
@@ -82,6 +108,15 @@ namespace TickTackToeWithDedicated_Server
         public void OnNetworkReceiveUnconnected(IPEndPoint remoteEndPoint, NetPacketReader reader, UnconnectedMessageType messageType)
         {
 
+        }
+
+        private INetPacket RessolvePacket(PacketType packetType, NetPacketReader reader)
+        {
+            var registry = _serviceProvider.GetRequiredService<PacketRegistry>();
+            var type = registry.PacketTypes[packetType];
+            var packet = (INetPacket)Activator.CreateInstance(type);
+            packet.Deserialize(reader);
+            return packet;
         }
     }
 }

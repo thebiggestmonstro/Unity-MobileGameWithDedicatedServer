@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MobileTickTacToe_Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8bdd5413190b302fdd549deccb3ca7066841fc82")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7851c18dd6511494c8bba17a02d3af73575ca572")]
 [assembly: System.Reflection.AssemblyProductAttribute("MobileTickTacToe_Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MobileTickTacToe_Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

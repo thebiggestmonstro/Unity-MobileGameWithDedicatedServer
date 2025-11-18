@@ -1,0 +1,23 @@
+using LiteNetLib.Utils;
+
+namespace NetworkShared
+{
+   
+    public enum PacketType : byte
+    {
+#region ClientToServer
+        Invalid = 0,
+        AuthRequest = 1,
+#endregion
+
+#region ServerToClient
+        OnAuth = 100
+#endregion
+    }
+    
+
+    public interface INetPacket : INetSerializable
+    {
+        PacketType Type { get; }
+    }
+}
