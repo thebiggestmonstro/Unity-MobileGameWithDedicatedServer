@@ -1,9 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using MobileTickTacToe_Server.Game;
 using MobileTickTacToe_Server.Handlers;
+using MobileTickTacToe_Server.NetworkShared.Packets.ServerToClient;
 using NetworkShared;
 using NetworkShared.Attributes;
 using NetworkShared.Packets.ClientToServer;
+using TickTackToeWithDedicated_Server;
 
 namespace MobileTickTacToe_Server.PacketHandlers
 {
@@ -12,11 +14,13 @@ namespace MobileTickTacToe_Server.PacketHandlers
     {
         private readonly ILogger<AuthRequestHandler> _logger;
         private readonly UsersManager _usersManager;
+        private readonly NetworkServer _server;
 
-        public AuthRequestHandler(ILogger<AuthRequestHandler> logger, UsersManager usersManager)
+        public AuthRequestHandler(ILogger<AuthRequestHandler> logger, UsersManager usersManager, NetworkServer server)
         { 
             _logger = logger;
             _usersManager = usersManager;
+            _server = server;
         }
 
         public void Handle(INetPacket packet, int connectionId)
@@ -30,7 +34,38 @@ namespace MobileTickTacToe_Server.PacketHandlers
 
             bool loginSuccess = _usersManager.LoginOrRegister(connectionId, msg.UserName, msg.Password);
 
+            INetPacket rmsg;
+
+            if (loginSuccess)
+            {
+                rmsg = new Net_OnAuth();
+            }
+            else
+            {
+                rmsg = new Net_OnAuthFailed();
+            }
+
+            _server.SendClient(connectionId, rmsg);
+
+            if (loginSuccess)
+            {
+                NotifyOtherPlayers(connectionId);
+            }
+
             // 3) Success -> Send Net_Auth Message / False -> Send Net_AuthFail Message
+        }
+
+        private void NotifyOtherPlayers(int excluededConnectionId)
+        {
+            // 해당 패킷의 내용을 설정해야 함
+            var rmsg = new Net_OnServerStatus();
+
+            var otherIds = _usersManager.GetOtherConnectionIds(excluededConnectionId);
+
+            foreach (var connectId in otherIds)
+            {
+                _server.SendClient(connectId, rmsg);
+            }
         }
     }
 }

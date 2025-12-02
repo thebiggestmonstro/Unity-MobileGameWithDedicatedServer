@@ -1,6 +1,8 @@
 ﻿using LiteNetLib;
+using LiteNetLib.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MobileTickTacToe_Server.Game;
 using MobileTickTacToe_Server.Handlers;
 using MobileTickTacToe_Server.NetworkShared.Registries;
 using NetworkShared;
@@ -12,9 +14,10 @@ namespace TickTackToeWithDedicated_Server
     public class NetworkServer : INetEventListener
     {
         NetManager _netManager;
-        private Dictionary<int, NetPeer> _connections = new Dictionary<int, NetPeer>();
         private readonly ILogger<NetworkServer> _logger;
         private readonly IServiceProvider _serviceProvider;
+        private UsersManager _usersManager;
+        private readonly NetDataWriter _cachedWriter = new NetDataWriter();
 
         public NetworkServer(ILogger<NetworkServer> logger, IServiceProvider provider) 
         {
@@ -30,6 +33,7 @@ namespace TickTackToeWithDedicated_Server
             };
 
             _netManager.Start(8888);
+            _usersManager = _serviceProvider.GetRequiredService<UsersManager>();
 
             Console.WriteLine("Server Listening on Port 8888...");
         }
@@ -39,14 +43,12 @@ namespace TickTackToeWithDedicated_Server
             _netManager.PollEvents();
         }
 
-        // 클라이언트가 서버에 접속을 요청하는 경우 호출하는 콜백 함수
         public void OnConnectionRequest(ConnectionRequest request)
         {
             Console.WriteLine($"Connection Request from {request.RemoteEndPoint}");
             request.Accept();
         }
 
-        // 클라이언트로부터 데이터를 받은 경우 호출하는 콜백 함수
         public void OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channelNumber, DeliveryMethod deliveryMethod)
         {
             using (var scope = _serviceProvider.CreateScope())
@@ -68,22 +70,21 @@ namespace TickTackToeWithDedicated_Server
             }
         }
 
-        // 서버에 클라이언트가 성공적으로 접속되면 호출하는 콜백 함수
         public void OnPeerConnected(NetPeer peer)
         {
-            Console.WriteLine($"Connected Client Port : {peer.Port}");
-            Console.WriteLine($"Connected Client Address : {peer.Address}");
-            Console.WriteLine($"Connected Client ID : {peer.Id}");
-            _connections.Add(peer.Id, peer);
+            _usersManager.AddConnection(peer);
+
+            var connection = _usersManager.GetConnection(peer.Id);
+            _logger.LogInformation($"{connection?.User?.Id} has been connected into : {peer.Port}");
         }
 
-        // 서버에 클라이언트가 성공적으로 접속해제되면 호출하는 콜백 함수
         public void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
         {
-            Console.WriteLine($"DisConnected Client Port : {peer.Port}");
-            Console.WriteLine($"DisConnected Client Address : {peer.Address}");
-            Console.WriteLine($"DisConnected Client ID : {peer.Id}");
-            _connections.Remove(peer.Id);
+            var connection = _usersManager.GetConnection(peer.Id);
+            _logger.LogInformation($"{connection?.User?.Id} has been disconnected from : {peer.Port}");
+
+            _netManager.DisconnectPeer(peer);
+            _usersManager.Disconnect(peer.Id);
         }
 
         public void OnNetworkError(IPEndPoint endPoint, SocketError socketError)
@@ -115,6 +116,19 @@ namespace TickTackToeWithDedicated_Server
             var packet = (INetPacket)Activator.CreateInstance(type);
             packet.Deserialize(reader);
             return packet;
+        }
+
+        public void SendClient(int peerId, INetPacket packet, DeliveryMethod method = DeliveryMethod.ReliableOrdered)
+        {
+            var peer = _usersManager.GetConnection(peerId).Peer;
+            peer.Send(WriteSerializable(packet), method);
+        }
+
+        private NetDataWriter WriteSerializable(INetPacket packet)
+        {
+            _cachedWriter.Reset();
+            packet.Serialize(_cachedWriter);
+            return _cachedWriter;
         }
     }
 }

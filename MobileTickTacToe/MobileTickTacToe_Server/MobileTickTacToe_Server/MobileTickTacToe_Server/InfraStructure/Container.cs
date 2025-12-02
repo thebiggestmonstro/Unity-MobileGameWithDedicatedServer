@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using MobileTickTacToe_Server.Data;
 using MobileTickTacToe_Server.Extensions;
+using MobileTickTacToe_Server.Game;
 using MobileTickTacToe_Server.NetworkShared.Registries;
 using TickTackToeWithDedicated_Server;
 
@@ -22,8 +23,8 @@ namespace MobileTickTacToe_Server.InfraStructure
             services.AddSingleton<NetworkServer>();
             services.AddSingleton<PacketRegistry>();
             services.AddSingleton<HandlerRegistry>();
-            services.AddSingleton<IUserRepository>();
             services.AddSingleton<IUserRepository, InMemoryUserRepository>();
+            services.AddSingleton<UsersManager>();
             services.AddPacketHandlers();
         }
     }

@@ -1,4 +1,5 @@
-﻿using MobileTickTacToe_Server.Data;
+﻿using LiteNetLib;
+using MobileTickTacToe_Server.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,17 @@ namespace MobileTickTacToe_Server.Game
 
         public UsersManager(IUserRepository userRepository)
         { 
+            _connections = new Dictionary<int, ServerConnection>();
             _userRepository = userRepository;
+        }
+
+        public void AddConnection(NetPeer peer)
+        {
+            _connections.Add(peer.Id, new ServerConnection
+            {
+                ConnectionId = peer.Id,
+                Peer = peer
+            });
         }
 
         public bool LoginOrRegister(int connectionId, string userName, string password)
@@ -54,6 +65,29 @@ namespace MobileTickTacToe_Server.Game
             }
 
             return true;
+        }
+
+        public void Disconnect(int peerId)
+        {
+            var connection = GetConnection(peerId);
+
+            if (connection.User != null)
+            {
+                var userId = connection.User.Id;
+                _userRepository.SetOffline(userId);
+            }
+
+            _connections.Remove(peerId);
+        }
+
+        public ServerConnection GetConnection(int peerId)
+        {
+            return _connections[peerId];
+        }
+
+        public int[] GetOtherConnectionIds(int excluededConnectionId)
+        {
+            return _connections.Keys.Where(k => k != excluededConnectionId).ToArray();
         }
     }
 }
