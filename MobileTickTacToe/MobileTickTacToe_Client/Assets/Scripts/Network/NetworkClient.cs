@@ -1,5 +1,7 @@
 using LiteNetLib;
 using LiteNetLib.Utils;
+using NetworkShared;
+using NetworkShared.Registries;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -11,6 +13,8 @@ public class NetworkClient : MonoBehaviour, INetEventListener
     private NetManager _netManager;
     private NetPeer _server;
     private NetDataWriter _writer;
+    private PacketRegistry _packetRegistry;
+    private HandlerRegistry _handlerRegistry;
 
     public event Action OnServerConnected;
 
@@ -38,6 +42,9 @@ public class NetworkClient : MonoBehaviour, INetEventListener
     public void Init()
     {
         _writer = new NetDataWriter();
+        _packetRegistry = new PacketRegistry();
+        _handlerRegistry = new HandlerRegistry();
+
         _netManager = new NetManager(this)
         {
             DisconnectTimeout = 10000
@@ -65,14 +72,15 @@ public class NetworkClient : MonoBehaviour, INetEventListener
         _server.Send(_writer, deliveryMethod);
     }
 
-    // 서버로부터 데이터를 받은 경우 호출하는 콜백 함수
     public void OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channelNumber, DeliveryMethod deliveryMethod)
     {
-        var data = Encoding.UTF8.GetString(reader.RawData).Replace("\0", "");
-        Debug.Log($"Received Data From Server : {data}");
+        var packetType = (PacketType)reader.GetByte();
+        var packet = ResolvePacket(packetType, reader);
+        var handler = ResolveHandler(packetType);
+        handler.Handle(packet, peer.Id);
+        reader.Recycle();
     }
 
-    // 클라이언트가 서버에 성공적으로 접속했을 경우 호출하는 콜백 함수
     public void OnPeerConnected(NetPeer peer)
     {
         Debug.Log($"Connect To Port : {peer.Port}");
@@ -81,7 +89,6 @@ public class NetworkClient : MonoBehaviour, INetEventListener
         OnServerConnected?.Invoke();
     }
 
-    // 클라이언트가 서버에서 성공적으로 접속해제했을 경우 호출하는 콜백 함수
     public void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
     {
         Debug.Log($"Disconnect From Port : {peer.Port}");
@@ -107,5 +114,19 @@ public class NetworkClient : MonoBehaviour, INetEventListener
     public void OnNetworkLatencyUpdate(NetPeer peer, int latency)
     {
 
+    }
+
+    private INetPacket ResolvePacket(PacketType packetType, NetPacketReader reader)
+    {
+        var type = _packetRegistry.PacketTypes[packetType];
+        var packet = (INetPacket)Activator.CreateInstance(type);
+        packet.Deserialize(reader);
+        return packet;
+    }
+
+    private IPacketHandler ResolveHandler(PacketType packetType)
+    {
+        var handlerType = _handlerRegistry.Handlers[packetType];
+        return (IPacketHandler)Activator.CreateInstance(handlerType);
     }
 }

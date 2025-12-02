@@ -1,8 +1,13 @@
 ﻿using NetworkShared;
 using NetworkShared.Attributes;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace MobileTickTacToe_Server.NetworkShared.Registries
+namespace NetworkShared.Registries
 {
     public class HandlerRegistry
     {

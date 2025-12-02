@@ -1,4 +1,6 @@
+using Assets.Scripts.PacketHandlers;
 using NetworkShared.Packets.ClientToServer;
+using NetworkShared.Packets.ServerToClient;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -70,12 +72,14 @@ public class UI_Login : UI_Base
         GetObject(enumNumbers[GetEnumFullName(GameObjects_Input.Input_UserName)]).GetOrAddComponent<TMP_InputField>().onValueChanged.AddListener(UpdateUserName);
         GetObject(enumNumbers[GetEnumFullName(GameObjects_Input.Input_Password)]).GetOrAddComponent<TMP_InputField>().onValueChanged.AddListener(UpdatePassword);
 
+        OnAuthFailedHandler.OnAuthFailed += ShowLoginError;
         NetworkClient.Instance.OnServerConnected += SetIsConnected;
     }
 
     private void OnDestroy()
     {
         NetworkClient.Instance.OnServerConnected -= SetIsConnected;
+        OnAuthFailedHandler.OnAuthFailed -= ShowLoginError;
     }
 
     private void SetIsConnected()
@@ -92,6 +96,7 @@ public class UI_Login : UI_Base
     IEnumerator CoLogin()
     {
         EnableLoggingButton(false);
+        GetObject(enumNumbers[GetEnumFullName(GameObjects_Text.Txt_LoginError)]).SetActive(false);
         GetObject(enumNumbers[GetEnumFullName(GameObjects_Image.Img_Circle1)]).transform.parent.gameObject.SetActive(true);
 
         NetworkClient.Instance.Connect();
@@ -157,5 +162,12 @@ public class UI_Login : UI_Base
         loginButton.GetOrAddComponent<Button>().interactable = interactable;
         var color = loginButton.GetOrAddComponent<Button>().interactable ? Color.white : Color.grey;
         loginButton.GetComponentInChildren<TextMeshProUGUI>().color = color;
+    }
+
+    private void ShowLoginError(Net_OnAuthFailed msg)
+    {
+        EnableLoggingButton(false);
+        GetObject(enumNumbers[GetEnumFullName(GameObjects_Image.Img_Circle1)]).transform.parent.gameObject.SetActive(false);
+        GetObject(enumNumbers[GetEnumFullName(GameObjects_Text.Txt_LoginError)]).SetActive(true);
     }
 }

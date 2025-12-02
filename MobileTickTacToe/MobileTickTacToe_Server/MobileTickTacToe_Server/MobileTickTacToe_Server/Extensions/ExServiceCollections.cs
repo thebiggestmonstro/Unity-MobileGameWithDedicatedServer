@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using MobileTickTacToe_Server.Handlers;
 using NetworkShared.Attributes;
 using System.Reflection;
+using NetworkShared;
 
 namespace MobileTickTacToe_Server.Extensions
 {
