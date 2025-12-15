@@ -1,10 +1,6 @@
 ﻿using LiteNetLib;
 using MobileTickTacToe_Server.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MobileTickTacToe_Server.NetworkShared.Packets.ServerToClient;
 
 namespace MobileTickTacToe_Server.Game
 {
@@ -88,6 +84,20 @@ namespace MobileTickTacToe_Server.Game
         public int[] GetOtherConnectionIds(int excluededConnectionId)
         {
             return _connections.Keys.Where(k => k != excluededConnectionId).ToArray();
+        }
+
+        public PlayersNetDto[] GetTopPlayers()
+        {
+            return _userRepository.GetQuery()
+                .OrderByDescending(x => x.Score)
+                .Select(u => new PlayersNetDto
+                {
+                    UserName = u.Id,
+                    Score = u.Score,
+                    IsOnline = u.IsOnline,
+                })
+                .Take(9)
+                .ToArray();
         }
     }
 }

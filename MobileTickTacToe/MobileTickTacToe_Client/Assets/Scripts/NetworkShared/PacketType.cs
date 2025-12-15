@@ -8,9 +8,10 @@ namespace NetworkShared
 #region ClientToServer
         Invalid = 0,
         AuthRequest = 1,
+        ServerStatusRequest = 2,
 #endregion
 
-#region ServerToClient
+        #region ServerToClient
         OnAuth = 100,
         OnAuthFailed = 101,
         OnServerStatus = 102,

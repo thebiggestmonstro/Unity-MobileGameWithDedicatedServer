@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace NetworkShared.Packets.ServerToClient
 {
-    public class Net_OnAuthFailed : INetPacket
+    public struct Net_OnAuthFailed : INetPacket
     {
         public PacketType Type => PacketType.OnAuthFailed;
 

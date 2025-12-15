@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MobileTickTacToe_Server.NetworkShared.Packets.ServerToClient
 {
-    public class Net_OnAuth : INetPacket
+    public struct Net_OnAuth : INetPacket
     {
         public PacketType Type => PacketType.OnAuth;
 

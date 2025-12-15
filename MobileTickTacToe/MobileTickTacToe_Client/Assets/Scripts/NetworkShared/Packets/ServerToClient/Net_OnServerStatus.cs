@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace NetworkShared.Packets.ServerToClient
 {
-    public class Net_OnServerStatus : INetPacket
+    public struct Net_OnServerStatus : INetPacket
     {
         public PacketType Type => PacketType.OnServerStatus;
 

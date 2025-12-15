@@ -3,7 +3,7 @@ using NetworkShared;
 
 namespace NetworkShared.Packets.ClientToServer
 {
-    public class Net_AuthRequest : INetPacket
+    public struct Net_AuthRequest : INetPacket
     {
         public PacketType Type => PacketType.AuthRequest;
 

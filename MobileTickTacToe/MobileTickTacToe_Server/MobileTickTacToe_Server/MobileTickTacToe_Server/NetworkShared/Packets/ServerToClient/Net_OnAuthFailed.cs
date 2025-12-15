@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MobileTickTacToe_Server.NetworkShared.Packets.ServerToClient
 {
-    public class Net_OnAuthFailed : INetPacket
+    public struct Net_OnAuthFailed : INetPacket
     {
         public PacketType Type => PacketType.OnAuthFailed;
 

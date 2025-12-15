@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using MobileTickTacToe_Server.Data;
 using MobileTickTacToe_Server.Game;
 using MobileTickTacToe_Server.NetworkShared.Packets.ServerToClient;
 using NetworkShared;
@@ -14,12 +15,14 @@ namespace MobileTickTacToe_Server.PacketHandlers
         private readonly ILogger<AuthRequestHandler> _logger;
         private readonly UsersManager _usersManager;
         private readonly NetworkServer _server;
+        private readonly IUserRepository _usersRepository;
 
-        public AuthRequestHandler(ILogger<AuthRequestHandler> logger, UsersManager usersManager, NetworkServer server)
+        public AuthRequestHandler(ILogger<AuthRequestHandler> logger, UsersManager usersManager, NetworkServer server, IUserRepository userRepository)
         { 
             _logger = logger;
             _usersManager = usersManager;
             _server = server;
+            _usersRepository = userRepository;
         }
 
         public void Handle(INetPacket packet, int connectionId)
@@ -56,8 +59,11 @@ namespace MobileTickTacToe_Server.PacketHandlers
 
         private void NotifyOtherPlayers(int excluededConnectionId)
         {
-            // 해당 패킷의 내용을 설정해야 함
-            var rmsg = new Net_OnServerStatus();
+            var rmsg = new Net_OnServerStatus()
+            {
+                PlayersCount = _usersRepository.GetTotalCount(),
+                TopPlayers = _usersManager.GetTopPlayers()
+            };
 
             var otherIds = _usersManager.GetOtherConnectionIds(excluededConnectionId);
 
