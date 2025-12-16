@@ -1,18 +1,21 @@
 ﻿using LiteNetLib;
 using MobileTickTacToe_Server.Data;
 using NetworkShared.Packets.ServerToClient;
+using TickTackToeWithDedicated_Server;
 
 namespace MobileTickTacToe_Server.Game
 {
     public class UsersManager
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IUserRepository _usersRepository;
         private Dictionary<int, ServerConnection> _connections;
+        private NetworkServer _server;
 
-        public UsersManager(IUserRepository userRepository)
+        public UsersManager(IUserRepository userRepository, NetworkServer server)
         { 
             _connections = new Dictionary<int, ServerConnection>();
-            _userRepository = userRepository;
+            _usersRepository = userRepository;
+            _server = server;
         }
 
         public void AddConnection(NetPeer peer)
@@ -26,7 +29,7 @@ namespace MobileTickTacToe_Server.Game
 
         public bool LoginOrRegister(int connectionId, string userName, string password)
         {
-            var dbUser = _userRepository.Get(userName);
+            var dbUser = _usersRepository.Get(userName);
 
             if (dbUser != null)
             {
@@ -46,7 +49,7 @@ namespace MobileTickTacToe_Server.Game
                     Score = 0,
                 };
 
-                _userRepository.Add(newUser);
+                _usersRepository.Add(newUser);
                 dbUser = newUser;
             }
 
@@ -66,7 +69,9 @@ namespace MobileTickTacToe_Server.Game
             if (connection.User != null)
             {
                 var userId = connection.User.Id;
-                _userRepository.SetOffline(userId);
+                _usersRepository.SetOffline(userId);
+
+                NotifyOtherPlayers(peerId);
             }
 
             _connections.Remove(peerId);
@@ -84,7 +89,7 @@ namespace MobileTickTacToe_Server.Game
 
         public PlayersNetDto[] GetTopPlayers()
         {
-            return _userRepository.GetQuery()
+            return _usersRepository.GetQuery()
                 .OrderByDescending(x => x.Score)
                 .Select(u => new PlayersNetDto
                 {
@@ -94,6 +99,22 @@ namespace MobileTickTacToe_Server.Game
                 })
                 .Take(9)
                 .ToArray();
+        }
+
+        private void NotifyOtherPlayers(int excluededConnectionId)
+        {
+            var rmsg = new Net_OnServerStatus()
+            {
+                PlayersCount = _usersRepository.GetTotalCount(),
+                TopPlayers = GetTopPlayers(),
+            };
+
+            var otherIds = GetOtherConnectionIds(excluededConnectionId);
+
+            foreach (var connectId in otherIds)
+            {
+                _server.SendClient(connectId, rmsg);
+            }
         }
     }
 }

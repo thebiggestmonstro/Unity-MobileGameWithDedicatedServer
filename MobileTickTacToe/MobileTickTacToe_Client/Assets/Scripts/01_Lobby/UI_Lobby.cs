@@ -5,6 +5,8 @@ using UnityEngine;
 using NetworkShared.Packets.ServerToClient;
 using Unity.VisualScripting;
 using TMPro;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 namespace MobileTickTacToe_Client.Login
 {
@@ -13,6 +15,7 @@ namespace MobileTickTacToe_Client.Login
         Dictionary<string, int> enumNumbers = new Dictionary<string, int>();
         private Transform _topPlayersContainer;
         private TextMeshProUGUI _totalPlayers;
+        private Button _logoutButton;
 
         [SerializeField]
         GameObject _playerRowPrefab;
@@ -46,6 +49,9 @@ namespace MobileTickTacToe_Client.Login
         {
             _topPlayersContainer = GetObject(enumNumbers[GetEnumFullName(GameObjects_Vlg.Vlg_PlayerList)]).transform;
             _totalPlayers = GetObject(enumNumbers[GetEnumFullName(GameObjects_Text.Txt_TotalPlayers)]).GetOrAddComponent<TextMeshProUGUI>();
+            _logoutButton = GetObject(enumNumbers[GetEnumFullName(GameObjects_Btn.Btn_Logout)]).GetOrAddComponent<Button>();
+            _logoutButton.onClick.AddListener(Logout);
+
             OnServerStatusRequestHandler.OnServerStatus += Refresh;
             RequestServerStatus();
         }
@@ -78,11 +84,15 @@ namespace MobileTickTacToe_Client.Login
             NetworkClient.Instance.SendServer(msg);
         }
 
+        private void Logout()
+        {
+            NetworkClient.Instance.Disconnect();
+            SceneManager.LoadScene("00_Login");
+        }
+
         // FindOpppnent()
 
         // CancelFindOpponent()
-
-        // Logout()
 
         // RefreshUI()
     }

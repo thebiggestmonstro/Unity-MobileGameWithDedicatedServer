@@ -57,6 +57,24 @@ public class NetworkClient : MonoBehaviour, INetEventListener
         _netManager.PollEvents();
     }
 
+    private void OnApplicationQuit()
+    {
+        Disconnect();
+    }
+
+    public void Disconnect()
+    {
+        _netManager.DisconnectAll();
+    }
+
+    private void OnDestroy()
+    {
+        if (_server != null)
+        {
+            _netManager.Stop();
+        }
+    }
+
     public void Connect()
     {
         _netManager.Connect("LocalHost", 8888, "");
