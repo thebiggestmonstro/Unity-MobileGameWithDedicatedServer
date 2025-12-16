@@ -2,22 +2,21 @@ using LiteNetLib.Utils;
 
 namespace NetworkShared
 {
-   
+
     public enum PacketType : byte
     {
-#region ClientToServer
+        #region ClientToServer
         Invalid = 0,
         AuthRequest = 1,
         ServerStatusRequest = 2,
-#endregion
+        #endregion
 
         #region ServerToClient
         OnAuth = 100,
         OnAuthFailed = 101,
         OnServerStatus = 102,
-#endregion
+        #endregion
     }
-    
 
     public interface INetPacket : INetSerializable
     {

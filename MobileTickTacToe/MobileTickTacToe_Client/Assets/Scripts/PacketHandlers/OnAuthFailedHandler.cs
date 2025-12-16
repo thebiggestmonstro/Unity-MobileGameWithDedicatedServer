@@ -2,9 +2,8 @@ using NetworkShared;
 using NetworkShared.Attributes;
 using NetworkShared.Packets.ServerToClient;
 using System;
-using UnityEngine;
 
-namespace Assets.Scripts.PacketHandlers
+namespace MobileTickTacToe_Client.PacketHandlers
 {
     [HandlerRegister(PacketType.OnAuthFailed)]
     public class OnAuthFailedHandler : IPacketHandler

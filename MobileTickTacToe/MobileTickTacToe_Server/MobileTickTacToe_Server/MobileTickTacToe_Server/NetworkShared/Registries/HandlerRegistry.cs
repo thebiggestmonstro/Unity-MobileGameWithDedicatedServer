@@ -1,8 +1,7 @@
-﻿using NetworkShared;
-using NetworkShared.Attributes;
+﻿using NetworkShared.Attributes;
 using System.Reflection;
 
-namespace MobileTickTacToe_Server.NetworkShared.Registries
+namespace NetworkShared.Registries
 {
     public class HandlerRegistry
     {

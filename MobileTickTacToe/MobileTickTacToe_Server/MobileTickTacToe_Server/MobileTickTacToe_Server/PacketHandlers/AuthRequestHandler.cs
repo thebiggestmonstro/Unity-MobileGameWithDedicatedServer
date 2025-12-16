@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using MobileTickTacToe_Server.Data;
 using MobileTickTacToe_Server.Game;
-using MobileTickTacToe_Server.NetworkShared.Packets.ServerToClient;
+using NetworkShared.Packets.ServerToClient;
 using NetworkShared;
 using NetworkShared.Attributes;
 using NetworkShared.Packets.ClientToServer;

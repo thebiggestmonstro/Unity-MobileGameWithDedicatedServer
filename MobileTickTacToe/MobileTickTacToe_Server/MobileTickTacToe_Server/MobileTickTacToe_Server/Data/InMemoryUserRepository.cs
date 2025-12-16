@@ -26,7 +26,7 @@ namespace MobileTickTacToe_Server.Data
                 {
                     Id = "User2",
                     Password = "222",
-                    IsOnline = true,
+                    IsOnline = false,
                     Score = 60
                 },
                 new User()

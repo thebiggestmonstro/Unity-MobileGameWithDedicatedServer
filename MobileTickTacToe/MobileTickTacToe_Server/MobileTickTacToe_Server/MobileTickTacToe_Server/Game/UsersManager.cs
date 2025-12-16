@@ -1,6 +1,6 @@
 ﻿using LiteNetLib;
 using MobileTickTacToe_Server.Data;
-using MobileTickTacToe_Server.NetworkShared.Packets.ServerToClient;
+using NetworkShared.Packets.ServerToClient;
 
 namespace MobileTickTacToe_Server.Game
 {
@@ -28,17 +28,14 @@ namespace MobileTickTacToe_Server.Game
         {
             var dbUser = _userRepository.Get(userName);
 
-            // 기존에 존재하던 사용자
             if (dbUser != null)
             {
-                // 비밀번호가 불일치
                 if (dbUser.Password != password)
                 {
                     return false;
                 }
             }
 
-            // 새로운 사용자
             if (dbUser == null)
             {
                 var newUser = new User
@@ -53,7 +50,6 @@ namespace MobileTickTacToe_Server.Game
                 dbUser = newUser;
             }
 
-            // false를 리턴하지 않으므로 해당 사용자는 서버에 성공적으로 접속함
             if (_connections.ContainsKey(connectionId))
             {
                 dbUser.IsOnline = true;

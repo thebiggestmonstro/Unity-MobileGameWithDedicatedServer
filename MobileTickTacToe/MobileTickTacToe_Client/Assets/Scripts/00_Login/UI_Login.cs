@@ -1,4 +1,4 @@
-using Assets.Scripts.PacketHandlers;
+using MobileTickTacToe_Client.PacketHandlers;
 using NetworkShared.Packets.ClientToServer;
 using NetworkShared.Packets.ServerToClient;
 using System.Collections;

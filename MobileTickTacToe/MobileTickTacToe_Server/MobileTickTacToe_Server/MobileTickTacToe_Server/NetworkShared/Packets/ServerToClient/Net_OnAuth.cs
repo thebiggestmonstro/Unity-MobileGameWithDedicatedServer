@@ -1,12 +1,6 @@
 ﻿using LiteNetLib.Utils;
-using NetworkShared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace MobileTickTacToe_Server.NetworkShared.Packets.ServerToClient
+namespace NetworkShared.Packets.ServerToClient
 {
     public struct Net_OnAuth : INetPacket
     {

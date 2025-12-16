@@ -3,7 +3,7 @@ using NetworkShared.Attributes;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Assets.Scripts.PacketHandlers
+namespace MobileTickTacToe_Client.PacketHandlers
 {
     [HandlerRegister(PacketType.OnAuth)]
     public class OnAuthHandler : IPacketHandler

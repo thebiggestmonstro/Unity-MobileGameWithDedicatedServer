@@ -14,6 +14,7 @@ namespace NetworkShared.Packets.ServerToClient
 
         public void Deserialize(NetDataReader reader)
         {
+            
         }
 
         public void Serialize(NetDataWriter writer)
