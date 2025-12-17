@@ -15,7 +15,11 @@ namespace MobileTickTacToe_Client.Login
         Dictionary<string, int> enumNumbers = new Dictionary<string, int>();
         private Transform _topPlayersContainer;
         private TextMeshProUGUI _totalPlayers;
+        private Button _findOpponentButton;
         private Button _logoutButton;
+
+        private Transform _waitingUI;
+        private Button _cancleMatchingButton;
 
         [SerializeField]
         GameObject _playerRowPrefab;
@@ -23,7 +27,7 @@ namespace MobileTickTacToe_Client.Login
         public enum GameObjects_Btn
         {
             Btn_FindOpponent,
-            Btn_Logout
+            Btn_Logout,
         }
 
         public enum GameObjects_Vlg
@@ -47,8 +51,15 @@ namespace MobileTickTacToe_Client.Login
 
         private void Start()
         {
+            _waitingUI = transform.Find("Waiting");
+            _cancleMatchingButton = _waitingUI.Find("Btn_CancleMatching").GetOrAddComponent<Button>();
+            _cancleMatchingButton.onClick.AddListener(CancelFindOpponent);
+
             _topPlayersContainer = GetObject(enumNumbers[GetEnumFullName(GameObjects_Vlg.Vlg_PlayerList)]).transform;
             _totalPlayers = GetObject(enumNumbers[GetEnumFullName(GameObjects_Text.Txt_TotalPlayers)]).GetOrAddComponent<TextMeshProUGUI>();
+
+            _findOpponentButton = GetObject(enumNumbers[GetEnumFullName(GameObjects_Btn.Btn_FindOpponent)]).GetOrAddComponent<Button>();
+            _findOpponentButton.onClick.AddListener(FindOpponent);
             _logoutButton = GetObject(enumNumbers[GetEnumFullName(GameObjects_Btn.Btn_Logout)]).GetOrAddComponent<Button>();
             _logoutButton.onClick.AddListener(Logout);
 
@@ -90,10 +101,24 @@ namespace MobileTickTacToe_Client.Login
             SceneManager.LoadScene("00_Login");
         }
 
-        // FindOpppnent()
+        private void FindOpponent()
+        {
+            LeanTween.cancelAll();
+            LeanTween.reset();
+            _findOpponentButton.gameObject.SetActive(false);
+            _waitingUI.gameObject.SetActive(true);
 
-        // CancelFindOpponent()
+            var msg = new Net_FindOpponentRequest();
+            NetworkClient.Instance.SendServer(msg);
+        }
 
-        // RefreshUI()
+        private void CancelFindOpponent()
+        {
+            _findOpponentButton.gameObject.SetActive(true);
+            _waitingUI.gameObject.SetActive(false);
+
+            var msg = new Net_CancleFindOpponentRequest();
+            NetworkClient.Instance.SendServer(msg);
+        }
     }
 }

@@ -9,14 +9,18 @@ namespace NetworkShared
         Invalid = 0,
         AuthRequest = 1,
         ServerStatusRequest = 2,
+        FindOpponentRequest = 3,
+        CancleFindOpponentRequest = 4,
         #endregion
 
         #region ServerToClient
         OnAuth = 100,
         OnAuthFailed = 101,
         OnServerStatus = 102,
+        OnFindOpponent = 103,
         #endregion
     }
+
 
     public interface INetPacket : INetSerializable
     {

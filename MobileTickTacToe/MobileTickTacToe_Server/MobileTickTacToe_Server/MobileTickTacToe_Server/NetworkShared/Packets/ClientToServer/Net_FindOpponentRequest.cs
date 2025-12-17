@@ -1,14 +1,14 @@
 ﻿using LiteNetLib.Utils;
 
-namespace NetworkShared.Packets.ServerToClient
+namespace NetworkShared.Packets.ClientToServer
 {
-    public struct Net_OnAuth : INetPacket
+    public class Net_FindOpponentRequest : INetPacket
     {
-        public PacketType Type => PacketType.OnAuth;
+        public PacketType Type => PacketType.FindOpponentRequest;
 
         public void Deserialize(NetDataReader reader)
         {
-            
+
         }
 
         public void Serialize(NetDataWriter writer)
