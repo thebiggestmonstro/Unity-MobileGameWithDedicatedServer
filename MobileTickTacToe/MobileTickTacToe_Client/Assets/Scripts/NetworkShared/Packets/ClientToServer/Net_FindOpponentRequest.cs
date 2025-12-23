@@ -2,7 +2,7 @@
 
 namespace NetworkShared.Packets.ClientToServer
 {
-    public class Net_FindOpponentRequest : INetPacket
+    public struct Net_FindOpponentRequest : INetPacket
     {
         public PacketType Type => PacketType.FindOpponentRequest;
 

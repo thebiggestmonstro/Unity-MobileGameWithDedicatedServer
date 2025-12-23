@@ -18,6 +18,7 @@ namespace NetworkShared
         OnAuthFailed = 101,
         OnServerStatus = 102,
         OnFindOpponent = 103,
+        OnStartGame = 104,
         #endregion
     }
 

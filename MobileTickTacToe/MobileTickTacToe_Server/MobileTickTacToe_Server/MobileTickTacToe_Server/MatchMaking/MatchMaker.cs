@@ -1,17 +1,23 @@
 ﻿
 using Microsoft.Extensions.Logging;
 using MobileTickTacToe_Server.Game;
+using NetworkShared.Packets.ServerToClient;
+using TickTackToeWithDedicated_Server;
 
 namespace MobileTickTacToe_Server.MatchMaking
 {
     public class MatchMaker
     {
         private ILogger<MatchMaker> _logger;
+        private GameManager _gameManager;
+        private NetworkServer _server;
         private List<MatchMakingRequest> _requestPool = new List<MatchMakingRequest>();
 
-        public MatchMaker(ILogger<MatchMaker> logger)
+        public MatchMaker(ILogger<MatchMaker> logger, GameManager gameManaer, NetworkServer server)
         {
             _logger = logger;
+            _gameManager = gameManaer;
+            _server = server;
         }
 
         public void RegisterPlayer(ServerConnection connection)
@@ -64,10 +70,28 @@ namespace MobileTickTacToe_Server.MatchMaking
 
                 var xUser = request.Connection.User.Id;
                 var yUser = match.Connection.User.Id;
+                var gameId = _gameManager.RegisterGame(xUser, yUser);
+                request.Connection.GameId = gameId;
+                match.Connection.GameId = gameId;
 
-                // TODO
+                var msg = new Net_OnStartGame
+                { 
+                    GameId = gameId,    
+                    XUserName = xUser,
+                    YUserName = yUser,
+                };
 
-                _logger.LogInformation($"Player {xUser} and  Player {yUser} had been Matched!!!");
+                var p1 = request.Connection.ConnectionId;
+                var p2 = match.Connection.ConnectionId;
+                _server.SendClient(p1, msg);
+                _server.SendClient(p2, msg);
+
+                _logger.LogInformation($"Matched Player {xUser} and  Player {yUser}!!!");
+            }
+
+            foreach (var request in matchMakingRequests)
+            {
+                _requestPool.Remove(request);
             }
         }
     }

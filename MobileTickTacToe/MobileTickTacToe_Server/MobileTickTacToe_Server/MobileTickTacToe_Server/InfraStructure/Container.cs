@@ -26,6 +26,7 @@ namespace MobileTickTacToe_Server.InfraStructure
             services.AddSingleton<HandlerRegistry>();
             services.AddSingleton<UsersManager>();
             services.AddSingleton<MatchMaker>();
+            services.AddSingleton<GameManager>();
             services.AddSingleton<IUserRepository, InMemoryUserRepository>();
             services.AddPacketHandlers();
         }

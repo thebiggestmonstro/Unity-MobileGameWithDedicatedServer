@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NetworkShared.Packets.ClientToServer
 {
-    public class Net_CancleFindOpponentRequest : INetPacket
+    public struct Net_CancleFindOpponentRequest : INetPacket
     {
         public PacketType Type => PacketType.CancleFindOpponentRequest;
 
