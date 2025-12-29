@@ -1,3 +1,4 @@
+using NetworkShared.Models;
 using System;
 using UnityEngine;
 
@@ -36,6 +37,29 @@ namespace Assets.Scripts.Game
 
         public bool InputEnabled { get; set; }
 
+        public string MyUserName { get; set; }
+        public MarkType MyType { get; set; }
+        public string OpponentUserName { get; set; }
+        public MarkType OpponentType { get; set; }
+
+        public bool IsMyTurn
+        {
+            get 
+            {
+                if (_activeGame == null)
+                {
+                    return false;
+                }
+
+                if (_activeGame.CurrentUser != MyUserName)
+                { 
+                    return false;
+                }
+
+                return true;
+            }    
+        }
+
         private void Awake()
         {
             if (_instance != null && _instance != this)
@@ -49,16 +73,29 @@ namespace Assets.Scripts.Game
             }
         }
 
-        public void RegisterGame(Guid gameId, string xUserName, string yUSerName)
+        public void RegisterGame(Guid gameId, string xUserName, string yUserName)
         {
             _activeGame = new Game
             {
                 Id = gameId,
                 XUserName = xUserName,
-                YUserName = yUSerName,
+                YUserName = yUserName,
                 StartTime = DateTime.Now,
                 CurrentUser = xUserName
             };
+
+            if (MyUserName == xUserName)
+            {
+                MyType = MarkType.X;
+                OpponentUserName = yUserName;
+                OpponentType = MarkType.Y;
+            }
+            else
+            {
+                MyType = MarkType.Y;
+                OpponentUserName = xUserName;
+                OpponentType = MarkType.X;
+            }
 
             InputEnabled = true;
         }

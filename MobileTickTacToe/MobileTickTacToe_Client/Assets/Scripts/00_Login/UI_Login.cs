@@ -1,3 +1,4 @@
+using Assets.Scripts.Game;
 using MobileTickTacToe_Client.PacketHandlers;
 using NetworkShared.Packets.ClientToServer;
 using NetworkShared.Packets.ServerToClient;
@@ -118,6 +119,7 @@ namespace MobileTickTacToe_Client.Login
             };
 
             NetworkClient.Instance.SendServer(authRequest);
+            GameManager.Instance.MyUserName = _userName;
         }
 
         private void UpdateUserName(string value)

@@ -23,7 +23,6 @@ namespace MobileTickTacToe_Client.Game
             Txt_XUserName,
             Txt_YScore,
             Txt_YUserName,
-            Txt_PlayerTurn,
             Txt_Timer
         }
 
