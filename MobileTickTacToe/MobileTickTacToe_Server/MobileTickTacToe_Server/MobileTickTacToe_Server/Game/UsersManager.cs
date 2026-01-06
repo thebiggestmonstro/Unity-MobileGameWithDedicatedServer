@@ -82,6 +82,11 @@ namespace MobileTickTacToe_Server.Game
             return _connections[peerId];
         }
 
+        public ServerConnection GetConnection(string userId)
+        {
+            return _connections.FirstOrDefault(x => x.Value.User.Id == userId).Value;
+        }
+
         public int[] GetOtherConnectionIds(int excluededConnectionId)
         {
             return _connections.Keys.Where(k => k != excluededConnectionId).ToArray();

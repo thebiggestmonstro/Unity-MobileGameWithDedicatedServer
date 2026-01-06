@@ -1,4 +1,5 @@
 using Assets.Scripts.Game;
+using NetworkShared.Packets.ClientToServer;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -43,8 +44,8 @@ namespace MobileTickTacToe_Client.Game
 
             Debug.Log("Sending MarkCellRequset to Server");
 
-            // var msg = new Net_MarkCellRequset();
-            // NetworkClient.Instance.SendMessage(msg);
+            var msg = new Net_MarkCellRequest();
+            NetworkClient.Instance.SendServer(msg);
         }
     } 
 }
