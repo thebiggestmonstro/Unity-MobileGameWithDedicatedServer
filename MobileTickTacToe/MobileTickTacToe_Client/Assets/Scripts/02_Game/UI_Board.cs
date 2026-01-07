@@ -1,3 +1,5 @@
+using MobileTickTacToe_Client.PacketHandlers;
+using NetworkShared.Packets.ServerToClient;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -14,6 +16,17 @@ namespace MobileTickTacToe_Client.Game
         private void Start()
         {
             ResetBoard();
+            OnMarkCellHandler.OnMarkCell += UpdateBoard;
+        }
+
+        private void OnDestroy()
+        {
+            OnMarkCellHandler.OnMarkCell -= UpdateBoard;
+        }
+
+        private void UpdateBoard(Net_OnMarkCell msg)
+        {
+            _cells[msg.Index].UpdateUI(msg.PlayerName);
         }
 
         private void ResetBoard()

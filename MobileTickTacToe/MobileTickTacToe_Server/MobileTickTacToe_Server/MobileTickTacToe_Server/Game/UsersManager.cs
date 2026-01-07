@@ -121,5 +121,12 @@ namespace MobileTickTacToe_Server.Game
                 _server.SendClient(connectId, rmsg);
             }
         }
+
+        public void IncreaseScore(string userId)
+        {
+            var user = _usersRepository.Get(userId);
+            user.Score += 10;
+            _usersRepository.Update(user);
+        }
     }
 }

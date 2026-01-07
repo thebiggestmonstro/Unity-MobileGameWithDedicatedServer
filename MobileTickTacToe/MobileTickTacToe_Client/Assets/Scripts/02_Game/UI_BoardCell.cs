@@ -3,6 +3,7 @@ using NetworkShared.Packets.ClientToServer;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using NetworkShared.Models;
 
 namespace MobileTickTacToe_Client.Game 
 { 
@@ -35,17 +36,39 @@ namespace MobileTickTacToe_Client.Game
         {
             if (!GameManager.Instance.IsMyTurn || !GameManager.Instance.InputEnabled)
             {
-                Debug.Log("Not My Turn!!!");
+                Debug.Log("Not my turn!");
                 return;
             }
 
             _button.interactable = false;
             GameManager.Instance.InputEnabled = false;
 
-            Debug.Log("Sending MarkCellRequset to Server");
+            Debug.Log("Sending MarkCellRequest to server!");
 
-            var msg = new Net_MarkCellRequest();
+            var msg = new Net_MarkCellRequest
+            {
+                Index = _index,
+            };
+
             NetworkClient.Instance.SendServer(msg);
+        }
+
+        public void UpdateUI(string player)
+        {
+            var playerType = GameManager.Instance.ActiveGame.GetPlayerType(player);
+
+            if (playerType == MarkType.X)
+            {
+                _xImg.gameObject.SetActive(true);
+                LeanTween.scale(_xImg.gameObject, new Vector3(1.0f, 1.0f, 1.0f), 0.5f).setEase(LeanTweenType.easeOutBounce);
+            }
+            else
+            {
+                _oImg.gameObject.SetActive(true);
+                LeanTween.scale(_oImg.gameObject, new Vector3(1.0f, 1.0f, 1.0f), 0.5f).setEase(LeanTweenType.easeOutBounce);
+            }
+
+            _button.interactable = false;
         }
     } 
 }

@@ -177,6 +177,24 @@ namespace MobileTickTacToe_Server.Game
         {
             return (WinLineType)(col + 3);
         }
+
+        public void SwitchCurrentPlayer()
+        {
+            CurrentUserName = GetOpponent(CurrentUserName);
+        }
+
+        public void AddWin(string winnerId)
+        {
+            var winnerType = GetPlayerType(winnerId);
+            if (winnerType == MarkType.X)
+            {
+                XUserWinCount++;
+            }
+            else
+            {
+                YUserWinCount++;
+            }
+        }
     }
 
     public struct MarkResult

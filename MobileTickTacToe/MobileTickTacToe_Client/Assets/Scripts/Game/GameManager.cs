@@ -14,6 +14,31 @@ namespace Assets.Scripts.Game
             public string CurrentUser { get; set; }
             public DateTime StartTime { get; set; }
             public DateTime EndTime { get; set; }
+
+            private string GetOpponent(string userName)
+            {
+                if (CurrentUser == XUserName)
+                {
+                    return YUserName;
+                }
+
+                return XUserName;
+            }
+
+            public void SwitchCurrentPlayer()
+            {
+                CurrentUser = GetOpponent(CurrentUser);
+            }
+
+            public MarkType GetPlayerType(string userId)
+            {
+                if (userId == XUserName)
+                {
+                    return MarkType.X;
+                }
+
+                return MarkType.Y;
+            }
         }
 
         private Game _activeGame;
