@@ -30,10 +30,14 @@ namespace MobileTickTacToe_Client.Game
         }
 
         private Transform _turn;
+        private Transform _endRoundPanel;
         private TextMeshProUGUI _xUserName;
         private TextMeshProUGUI _xUserScore;
         private TextMeshProUGUI _yUserName;
         private TextMeshProUGUI _yUserScore;
+
+        private int _xScore = 0;
+        private int _yScore = 0;
 
         private void Awake()
         {
@@ -47,6 +51,7 @@ namespace MobileTickTacToe_Client.Game
             _yUserName = GetObject(enumNumbers[GetEnumFullName(GameObjects_Text.Txt_YUserName)]).GetOrAddComponent<TextMeshProUGUI>();
             _yUserScore = GetObject(enumNumbers[GetEnumFullName(GameObjects_Text.Txt_YScore)]).GetOrAddComponent<TextMeshProUGUI>();
             _turn = transform.Find("Turn");
+            _endRoundPanel = transform.Find("EndRound");
 
             OnMarkCellHandler.OnMarkCell += HandleMarkCell;
 
@@ -65,12 +70,42 @@ namespace MobileTickTacToe_Client.Game
             if (msg.Outcome != MarkOutcome.None)
             {
                 var isDraw = msg.Outcome == MarkOutcome.Draw;
-                Debug.Log("Showing End Round Screen!");
+                StartCoroutine(EndRoundCoroutine(msg.PlayerName, isDraw));
                 return;
             }
 
             StopCoroutine(ShowTurn());
             StartCoroutine(ShowTurn());
+        }
+
+        private IEnumerator EndRoundCoroutine(string playerName, bool isDraw)
+        {
+            var waitTime = isDraw ? 1.5f : 2f;
+            yield return new WaitForSeconds(waitTime);
+            DisplayEndRoundUI(playerName, isDraw);
+        }
+
+        void DisplayEndRoundUI(string playerName, bool isDraw)
+        {
+            _endRoundPanel.gameObject.SetActive(true);
+            _endRoundPanel.GetOrAddComponent<UI_EndRound>().Init(playerName, isDraw);
+
+            if (isDraw)
+            {
+                return;
+            }
+
+            var playerType = GameManager.Instance.ActiveGame.GetPlayerType(playerName);
+            if (playerType == MarkType.X)
+            {
+                _xScore++;
+                _xUserScore.text = _xScore.ToString();
+            }
+            else if (playerType == MarkType.Y)
+            {
+                _yScore++;
+                _yUserScore.text = _yScore.ToString();
+            }
         }
 
         private IEnumerator ShowTurn()
