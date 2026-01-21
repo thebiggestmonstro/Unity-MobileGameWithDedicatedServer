@@ -12,6 +12,7 @@ namespace NetworkShared
         FindOpponentRequest = 3,
         CancleFindOpponentRequest = 4,
         MarkCellRequst = 5,
+        PlayAgainRequest = 6,
         #endregion
 
         #region ServerToClient
@@ -21,6 +22,7 @@ namespace NetworkShared
         OnFindOpponent = 103,
         OnStartGame = 104,
         OnMarkCell = 105,
+        OnPlayAgain = 106,
         #endregion
     }
 

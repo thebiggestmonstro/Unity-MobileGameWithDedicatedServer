@@ -195,6 +195,19 @@ namespace MobileTickTacToe_Server.Game
                 YUserWinCount++;
             }
         }
+
+        public void SetRematchReadiness(string userId)
+        {
+            var playerType = GetPlayerType(userId);
+            if (playerType == MarkType.X)
+            {
+                XWantRematch = true;
+            }
+            else
+            {
+                YWantRematch = true;
+            }
+        }
     }
 
     public struct MarkResult

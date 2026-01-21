@@ -3,6 +3,8 @@ using Unity.VisualScripting;
 using TMPro;
 using UnityEngine.UI;
 using Assets.Scripts.Game;
+using NetworkShared.Packets.ClientToServer;
+using MobileTickTacToe_Client.PacketHandlers;
 
 namespace MobileTickTacToe_Client.Game
 {
@@ -46,8 +48,19 @@ namespace MobileTickTacToe_Client.Game
             _txtOpponentLeft = _imgPopupPanel.Find("Txt_OpponentLeft");
             _txtPlayAgain = _imgPopupPanel.Find("Txt_PlayAgain");
             _txtWatingForOpponent = _imgPopupPanel.Find("Txt_WaitingForOpponent");
+
+            _btnPlayAgain.GetOrAddComponent<Button>().onClick.AddListener(RequestPlayAgain);
+
+            OnPlayAgainHandler.OnPlayAgain += HandlePlayAgainRequest;
+
+            LeanTween.scale(_imgPopupPanel.gameObject, new Vector3(1.0f, 1.0f, 1.0f), 1.0f).setEase(LeanTweenType.easeOutBounce);
         }
 
+        private void OnDisable()
+        {
+            _btnPlayAgain.GetOrAddComponent<Button>().onClick.RemoveListener(RequestPlayAgain);
+            OnPlayAgainHandler.OnPlayAgain -= HandlePlayAgainRequest;
+        }
 
         public void Init(string playerName, bool isDraw)
         {
@@ -70,6 +83,25 @@ namespace MobileTickTacToe_Client.Game
                 _imgWinLoose.color = _looseColor;
                 _txtWinLoose.text = _looseText;
             }
+        }
+
+        private void RequestPlayAgain()
+        {
+            _btnPlayAgain.gameObject.SetActive(false);
+            _txtWatingForOpponent.gameObject.SetActive(true);
+
+            var msg = new Net_PlayAgainRequest();
+            NetworkClient.Instance.SendServer(msg);
+        }
+
+        private void HandlePlayAgainRequest()
+        {
+            _btnPlayAgain.gameObject.SetActive(false);
+            _btnAccept.gameObject.SetActive(true);
+            _txtPlayAgain.gameObject.SetActive(true);
+
+            var rectTransform = _imgPopupPanel.GetComponent<RectTransform>();
+            rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, rectTransform.sizeDelta.y + 75f);
         }
     }
 }
