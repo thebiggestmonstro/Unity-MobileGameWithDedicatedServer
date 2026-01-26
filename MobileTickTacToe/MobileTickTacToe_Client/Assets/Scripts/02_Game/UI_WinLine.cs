@@ -33,7 +33,9 @@ namespace MobileTickTacToe_Client.Game
         {
             _image = gameObject.GetOrAddComponent<Image>();
             _rectTransform = gameObject.GetOrAddComponent<RectTransform>();
+
             OnMarkCellHandler.OnMarkCell += HandleMarkCell;
+            OnNewRoundHandler.OnNewRound += ResetLine;
 
             _lineConfigs = InitLineConfigs();
         }
@@ -67,7 +69,7 @@ namespace MobileTickTacToe_Client.Game
             }
         }
 
-        private void SetupLine(LineConfig config, string playerId)
+        private void SetupLine(LineConfig config, string playerId = default)
         {
             Color color = _xColor;
 
@@ -97,6 +99,13 @@ namespace MobileTickTacToe_Client.Game
                 { WinLineType.RowMiddle, new LineConfig() {  Height = 290f,  ZRotation = 90f, X = 0, Y = 0f } },
                 { WinLineType.RowBottom, new LineConfig() {  Height = 290f,  ZRotation = 90f, X = 0, Y = -94f } },
             };
+        }
+
+        private void ResetLine()
+        {
+            _image.enabled = false;
+            _image.fillAmount = 0;
+            SetupLine(_lineConfigs[WinLineType.ColMid]);
         }
     }
 }

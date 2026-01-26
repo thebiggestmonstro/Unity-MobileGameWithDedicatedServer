@@ -2,7 +2,7 @@
 
 namespace NetworkShared.Packets.ServerToClient
 {
-    public class Net_OnPlayAgain : INetPacket
+    public struct Net_OnPlayAgain : INetPacket
     {
         public PacketType Type => PacketType.OnPlayAgain;
 

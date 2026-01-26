@@ -17,11 +17,13 @@ namespace MobileTickTacToe_Client.Game
         {
             ResetBoard();
             OnMarkCellHandler.OnMarkCell += UpdateBoard;
+            OnNewRoundHandler.OnNewRound += ResetBoard;
         }
 
         private void OnDestroy()
         {
             OnMarkCellHandler.OnMarkCell -= UpdateBoard;
+            OnNewRoundHandler.OnNewRound -= ResetBoard;
         }
 
         private void UpdateBoard(Net_OnMarkCell msg)

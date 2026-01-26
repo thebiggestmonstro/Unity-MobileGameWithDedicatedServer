@@ -36,6 +36,8 @@ namespace MobileTickTacToe_Client.Game
         private Transform _btnQuit;
         #endregion
 
+        private float _originalPanelHeight;
+
         private void OnEnable()
         {
             _imgPopupPanel = transform.Find("Img_PopupPanel");
@@ -50,8 +52,13 @@ namespace MobileTickTacToe_Client.Game
             _txtWatingForOpponent = _imgPopupPanel.Find("Txt_WaitingForOpponent");
 
             _btnPlayAgain.GetOrAddComponent<Button>().onClick.AddListener(RequestPlayAgain);
+            _btnAccept.GetOrAddComponent<Button>().onClick.AddListener(Accept);
 
             OnPlayAgainHandler.OnPlayAgain += HandlePlayAgainRequest;
+            OnNewRoundHandler.OnNewRound += ResetUI;
+
+            var rectTransform = _imgPopupPanel.GetComponent<RectTransform>();
+            _originalPanelHeight = rectTransform.sizeDelta.y;
 
             LeanTween.scale(_imgPopupPanel.gameObject, new Vector3(1.0f, 1.0f, 1.0f), 1.0f).setEase(LeanTweenType.easeOutBounce);
         }
@@ -59,7 +66,13 @@ namespace MobileTickTacToe_Client.Game
         private void OnDisable()
         {
             _btnPlayAgain.GetOrAddComponent<Button>().onClick.RemoveListener(RequestPlayAgain);
+            _btnAccept.GetOrAddComponent<Button>().onClick.RemoveListener(Accept);
+
             OnPlayAgainHandler.OnPlayAgain -= HandlePlayAgainRequest;
+            OnNewRoundHandler.OnNewRound -= ResetUI;
+
+            var rectTransform = _imgPopupPanel.GetComponent<RectTransform>();
+            rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, _originalPanelHeight);
         }
 
         public void Init(string playerName, bool isDraw)
@@ -94,6 +107,13 @@ namespace MobileTickTacToe_Client.Game
             NetworkClient.Instance.SendServer(msg);
         }
 
+        private void Accept()
+        {
+            _btnAccept.GetComponent<Button>().interactable = false;
+            var msg = new Net_AcceptPlayAgainRequest();
+            NetworkClient.Instance.SendServer(msg);
+        }
+
         private void HandlePlayAgainRequest()
         {
             _btnPlayAgain.gameObject.SetActive(false);
@@ -102,6 +122,16 @@ namespace MobileTickTacToe_Client.Game
 
             var rectTransform = _imgPopupPanel.GetComponent<RectTransform>();
             rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, rectTransform.sizeDelta.y + 75f);
+        }
+
+        private void ResetUI()
+        {
+            _btnPlayAgain.gameObject.SetActive(true);
+            _txtWatingForOpponent.gameObject.SetActive(false);
+            _btnAccept.GetComponent<Button>().interactable = false;
+            _btnAccept.gameObject.SetActive(false);
+            _txtPlayAgain.gameObject.SetActive(false);
+            gameObject.SetActive(false);
         }
     }
 }

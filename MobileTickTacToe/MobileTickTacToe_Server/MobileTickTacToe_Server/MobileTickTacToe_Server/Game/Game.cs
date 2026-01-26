@@ -208,6 +208,29 @@ namespace MobileTickTacToe_Server.Game
                 YWantRematch = true;
             }
         }
+
+        public bool BothPlayersReady()
+        {
+            return XWantRematch && YWantRematch;
+        }
+
+        public void NewRound()
+        {
+            CurrentRoundStartTime = DateTime.UtcNow;
+            ResetGrid();
+            CurrentUserName = XUserName;
+        }
+
+        public void ResetGrid()
+        {
+            for (int row = 0; row < GRID_SIZE; row++)
+            {
+                for (int col = 0; col < GRID_SIZE; col++)
+                {
+                    Grid[row, col] = 0;
+                }
+            }
+        }
     }
 
     public struct MarkResult

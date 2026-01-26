@@ -2,7 +2,7 @@
 
 namespace NetworkShared.Packets.ClientToServer
 {
-    public class Net_PlayAgainRequest : INetPacket
+    public struct Net_PlayAgainRequest : INetPacket
     {
         public PacketType Type => PacketType.PlayAgainRequest;
 

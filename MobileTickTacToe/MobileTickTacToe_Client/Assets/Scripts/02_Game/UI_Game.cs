@@ -54,6 +54,7 @@ namespace MobileTickTacToe_Client.Game
             _endRoundPanel = transform.Find("EndRound");
 
             OnMarkCellHandler.OnMarkCell += HandleMarkCell;
+            OnNewRoundHandler.OnNewRound += HandleNewRound;
 
             InitHeader();
         }
@@ -74,6 +75,12 @@ namespace MobileTickTacToe_Client.Game
                 return;
             }
 
+            StopCoroutine(ShowTurn());
+            StartCoroutine(ShowTurn());
+        }
+
+        private void HandleNewRound()
+        {
             StopCoroutine(ShowTurn());
             StartCoroutine(ShowTurn());
         }

@@ -39,6 +39,11 @@ namespace Assets.Scripts.Game
 
                 return MarkType.Y;
             }
+
+            public void Reset()
+            {
+                CurrentUser = XUserName;
+            }
         }
 
         private Game _activeGame;
