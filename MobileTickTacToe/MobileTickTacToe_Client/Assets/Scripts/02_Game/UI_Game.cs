@@ -8,6 +8,8 @@ using MobileTickTacToe_Client.PacketHandlers;
 using NetworkShared.Packets.ServerToClient;
 using NetworkShared.Models;
 using System.Collections;
+using UnityEngine.UI;
+using NetworkShared.Packets.ClientToServer;
 
 namespace MobileTickTacToe_Client.Game
 {
@@ -17,7 +19,7 @@ namespace MobileTickTacToe_Client.Game
 
         public enum GameObjects_Btn
         {
-            Btn_Logout
+            Btn_Surrender,
         }
 
         public enum GameObjects_Text
@@ -39,6 +41,8 @@ namespace MobileTickTacToe_Client.Game
         private int _xScore = 0;
         private int _yScore = 0;
 
+        private Button _surrenderBtn;
+
         private void Awake()
         {
             GenerateEnumsSerialNumber<UI_Game>(enumNumbers);
@@ -53,10 +57,24 @@ namespace MobileTickTacToe_Client.Game
             _turn = transform.Find("Turn");
             _endRoundPanel = transform.Find("EndRound");
 
+            _surrenderBtn = GetObject(enumNumbers[GetEnumFullName(GameObjects_Btn.Btn_Surrender)]).GetOrAddComponent<Button>();
+            _surrenderBtn.GetComponent<Button>().onClick.AddListener(Surrender);
+
             OnMarkCellHandler.OnMarkCell += HandleMarkCell;
             OnNewRoundHandler.OnNewRound += HandleNewRound;
+            OnSurrenderHandler.OnSurrender += HandleSurrender;
+            OnQuitGameHandler.OnQuitGame += HandleOpponentLeft;
 
             InitHeader();
+        }
+
+        private void OnDestroy()
+        {
+            _surrenderBtn.GetComponent<Button>().onClick.RemoveListener(Surrender);
+            OnMarkCellHandler.OnMarkCell -= HandleMarkCell;
+            OnNewRoundHandler.OnNewRound -= HandleNewRound;
+            OnSurrenderHandler.OnSurrender -= HandleSurrender;
+            OnQuitGameHandler.OnQuitGame -= HandleOpponentLeft;
         }
 
         private void InitHeader()
@@ -120,6 +138,26 @@ namespace MobileTickTacToe_Client.Game
             _turn.gameObject.SetActive(false);
             yield return new WaitForSeconds(1);
             _turn.gameObject.SetActive(true);
+        }
+
+        private void Surrender()
+        {
+            var msg = new Net_SurrenderRequest();
+            NetworkClient.Instance.SendServer(msg);
+        }
+
+        private void HandleSurrender(Net_OnSurrender msg)
+        {
+            DisplayEndRoundUI(msg.WinnerName, false);
+        }
+
+        private void HandleOpponentLeft(Net_OnQuitGame msg)
+        { 
+            if(!_endRoundPanel.gameObject.activeSelf)
+            {
+                _endRoundPanel.gameObject.SetActive(true);
+                _endRoundPanel.GetOrAddComponent<UI_EndRound>().HandleOpponentLeft(msg);
+            }
         }
     }
 }

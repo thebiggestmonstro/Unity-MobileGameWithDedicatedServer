@@ -1797,7 +1797,7 @@ GameObject:
   - component: {fileID: 888704056}
   - component: {fileID: 888704055}
   m_Layer: 5
-  m_Name: Btn_Logout
+  m_Name: Btn_Surrender
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2266,7 +2266,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Logout
+  m_text: Surrender
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 14e45d3e23bd5634383d359f16134dd1, type: 2}
   m_sharedMaterial: {fileID: -7662059848903700528, guid: 14e45d3e23bd5634383d359f16134dd1, type: 2}

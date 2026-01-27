@@ -1,10 +1,12 @@
-using UnityEngine;
-using Unity.VisualScripting;
-using TMPro;
-using UnityEngine.UI;
 using Assets.Scripts.Game;
-using NetworkShared.Packets.ClientToServer;
 using MobileTickTacToe_Client.PacketHandlers;
+using NetworkShared.Packets.ClientToServer;
+using NetworkShared.Packets.ServerToClient;
+using TMPro;
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace MobileTickTacToe_Client.Game
 {
@@ -37,6 +39,7 @@ namespace MobileTickTacToe_Client.Game
         #endregion
 
         private float _originalPanelHeight;
+        private bool _opponentLeft = false;
 
         private void OnEnable()
         {
@@ -53,9 +56,11 @@ namespace MobileTickTacToe_Client.Game
 
             _btnPlayAgain.GetOrAddComponent<Button>().onClick.AddListener(RequestPlayAgain);
             _btnAccept.GetOrAddComponent<Button>().onClick.AddListener(Accept);
+            _btnQuit.GetOrAddComponent<Button>().onClick.AddListener(Quit);
 
             OnPlayAgainHandler.OnPlayAgain += HandlePlayAgainRequest;
             OnNewRoundHandler.OnNewRound += ResetUI;
+            OnQuitGameHandler.OnQuitGame += HandleOpponentLeft;
 
             var rectTransform = _imgPopupPanel.GetComponent<RectTransform>();
             _originalPanelHeight = rectTransform.sizeDelta.y;
@@ -67,9 +72,11 @@ namespace MobileTickTacToe_Client.Game
         {
             _btnPlayAgain.GetOrAddComponent<Button>().onClick.RemoveListener(RequestPlayAgain);
             _btnAccept.GetOrAddComponent<Button>().onClick.RemoveListener(Accept);
+            _btnQuit.GetOrAddComponent<Button>().onClick.RemoveListener(Quit);
 
             OnPlayAgainHandler.OnPlayAgain -= HandlePlayAgainRequest;
             OnNewRoundHandler.OnNewRound -= ResetUI;
+            OnQuitGameHandler.OnQuitGame -= HandleOpponentLeft;
 
             var rectTransform = _imgPopupPanel.GetComponent<RectTransform>();
             rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, _originalPanelHeight);
@@ -128,10 +135,35 @@ namespace MobileTickTacToe_Client.Game
         {
             _btnPlayAgain.gameObject.SetActive(true);
             _txtWatingForOpponent.gameObject.SetActive(false);
-            _btnAccept.GetComponent<Button>().interactable = false;
+            _btnAccept.GetComponent<Button>().interactable = true;
             _btnAccept.gameObject.SetActive(false);
             _txtPlayAgain.gameObject.SetActive(false);
             gameObject.SetActive(false);
+        }
+
+        private void Quit()
+        {
+            if (_opponentLeft)
+            {
+                SceneManager.LoadScene("01_Lobby");
+                return;
+            }
+
+            _btnQuit.GetComponent<Button>().interactable = false;
+            var msg = new Net_QuitGameRequest();
+            NetworkClient.Instance.SendServer(msg);
+        }
+
+        public void HandleOpponentLeft(Net_OnQuitGame msg)
+        {
+            _btnPlayAgain.gameObject.SetActive(false);
+            _txtOpponentLeft.gameObject.SetActive(true);
+            _txtWatingForOpponent.gameObject.SetActive(false);
+            _txtPlayAgain.gameObject.SetActive(false);
+            var rectTransform = _imgPopupPanel.GetComponent<RectTransform>();
+            rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, _originalPanelHeight);
+            _btnAccept.gameObject.SetActive(false);
+            _opponentLeft = true;
         }
     }
 }
