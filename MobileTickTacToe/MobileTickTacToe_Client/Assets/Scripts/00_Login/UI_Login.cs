@@ -71,6 +71,7 @@ namespace MobileTickTacToe_Client.Login
             GetObject(enumNumbers[GetEnumFullName(GameObjects_Image.Img_Circle1)]).transform.parent.gameObject.SetActive(false);
 
             GetObject(enumNumbers[GetEnumFullName(GameObjects_Btn.Btn_Login)]).GetOrAddComponent<Button>().onClick.AddListener(Login);
+            GetObject(enumNumbers[GetEnumFullName(GameObjects_Btn.Btn_Quit)]).GetOrAddComponent<Button>().onClick.AddListener(QuitApplication);
 
             GetObject(enumNumbers[GetEnumFullName(GameObjects_Input.Input_UserName)]).GetOrAddComponent<TMP_InputField>().onValueChanged.AddListener(UpdateUserName);
             GetObject(enumNumbers[GetEnumFullName(GameObjects_Input.Input_Password)]).GetOrAddComponent<TMP_InputField>().onValueChanged.AddListener(UpdatePassword);
@@ -173,6 +174,11 @@ namespace MobileTickTacToe_Client.Login
             EnableLoggingButton(false);
             GetObject(enumNumbers[GetEnumFullName(GameObjects_Image.Img_Circle1)]).transform.parent.gameObject.SetActive(false);
             GetObject(enumNumbers[GetEnumFullName(GameObjects_Text.Txt_LoginError)]).SetActive(true);
+        }
+
+        private void QuitApplication()
+        {
+            Application.Quit();
         }
     }
 }
